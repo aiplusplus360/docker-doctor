@@ -36,4 +36,11 @@ jobs:
       - name: CLI contract
         run: |
           docker-doctor --version
-          docker-doctor examples/bad.Dockerfile; test $? -eq 1 || true
+          set +e
+          docker-doctor examples/bad.Dockerfile > findings.txt
+          code=$?
+          set -e
+          cat findings.txt
+          grep -q "finding(s)" findings.txt
+          echo "exit code: $code"
+          test "$code" -eq 1
